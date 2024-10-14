@@ -4,6 +4,16 @@ const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
 canvas.width = 600;
 canvas.height = 600;
+const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+grad.addColorStop(0.2, "red");
+grad.addColorStop(0.4, "blue");
+grad.addColorStop(0.6, "green");
+grad.addColorStop(0.8, "violet");
+
+ctx.shadowColor = "white";
+ctx.shad0wBlur = 4
+ctx.shadowOffsetX = 4;
+ctx.shadowOffsetY = 4;
 
 class Shape {
   constructor(effect, x, y, radius, inset, n) {
@@ -22,7 +32,9 @@ class Shape {
   }
   draw(ctx) {
     ctx.beginPath();
-    ctx.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
+    ctx.strokeStyle = `hsl(${this.hue}, 100%, 50%)`;
+    ctx.lineWidth = 4;
+    ctx.fillStyle = grad;
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
@@ -56,17 +68,6 @@ class Shape {
     }
   }
   edges() {
-    //   if (this.x < 0) {
-    //     this.x = this.effect.width;
-    //   } else if (this.x > this.effect.width) {
-    //     this.x = 0;
-    //   }
-    //   if (this.y < 0) {
-    //     this.y = this.effect.height;
-    //   } else if (this.y > this.effect.height) {
-    //     this.y = 0;
-    //   }
-
     if (this.x < this.radius || this.x > this.effect.width - this.radius) {
       this.speedX *= -1;
     }
@@ -80,11 +81,11 @@ class Effect {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.shapeNum = 20;
+    this.shapeNum = 2;
     this.shapes = [];
     this.shape = new Shape(this);
     this.initShapes();
-    this.cellSize = 100;
+    this.cellSize = 80;
     this.rows = this.height / this.cellSize;
     this.cols = this.width / this.cellSize;
     this.debug = true;
@@ -93,7 +94,7 @@ class Effect {
     for (let i = 0; i < this.cols; i++) {
       this.angles[i] = [];
       for (let j = 0; j < this.rows; j++) {
-        this.angles[i][j] = Math.random() * 0.05 - 0.05;
+        this.angles[i][j] = Math.random() * 0.1 - 0.025;
       }
     }
 
@@ -106,6 +107,9 @@ class Effect {
 
     const insetSlider = document.getElementById("insetSlider");
     const insetValue = document.getElementById("insetValue");
+
+    const shapeNumSlider = document.getElementById("shapeNumSlider");
+    const shapeNumValue = document.getElementById("shapeNumValue");
 
     debugBtn.addEventListener("click", () => {
       this.debug = !this.debug;
@@ -130,8 +134,15 @@ class Effect {
       this.initShapes();
       this.resetValues();
     });
+    shapeNumSlider.addEventListener("change", (e) => {
+     
+      this.shapes = [];
+      this.initShapes();
+      this.resetValues();
+    });
   }
   initShapes() {
+    this.shapeNum = Number(shapeNumSlider.value);
     for (let i = 0; i < this.shapeNum; i++) {
       let radius = Number(radSlider.value);
       let x = Math.random() * (this.width - radius - radius) + radius;
@@ -145,12 +156,15 @@ class Effect {
     numValue.innerHTML = numSlider.value;
     radValue.innerHTML = radSlider.value;
     insetValue.innerHTML = insetSlider.value;
+    shapeNumValue.innerHTML = shapeNumSlider.value;
+
   }
   drawGrid(ctx) {
     if (!this.debug) {
       for (let i = 0; i < this.cols; i++) {
         for (let j = 0; j < this.rows; j++) {
           ctx.beginPath();
+          ctx.lineWidth = 1;
           ctx.strokeStyle = "white";
           ctx.rect(
             i * this.cellSize,
