@@ -18,6 +18,7 @@ class Shape {
     this.angle = 0;
     this.rotation = 0;
     this.hue = 0;
+    this.angle2 = 0;
   }
   draw(ctx) {
     ctx.beginPath();
@@ -55,16 +56,22 @@ class Shape {
     }
   }
   edges() {
-    if (this.x < 0) {
-      this.x = this.effect.width;
-    } else if (this.x > this.effect.width) {
-      this.x = 0;
-    }
+    //   if (this.x < 0) {
+    //     this.x = this.effect.width;
+    //   } else if (this.x > this.effect.width) {
+    //     this.x = 0;
+    //   }
+    //   if (this.y < 0) {
+    //     this.y = this.effect.height;
+    //   } else if (this.y > this.effect.height) {
+    //     this.y = 0;
+    //   }
 
-    if (this.y < 0) {
-      this.y = this.effect.height;
-    } else if (this.y > this.effect.height) {
-      this.y = 0;
+    if (this.x < this.radius || this.x > this.effect.width - this.radius) {
+      this.speedX *= -1;
+    }
+    if (this.y < this.radius || this.y > this.effect.height - this.radius) {
+      this.speedY *= -1;
     }
   }
 }
@@ -73,11 +80,11 @@ class Effect {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    this.shapeNum = 50;
+    this.shapeNum = 20;
     this.shapes = [];
     this.shape = new Shape(this);
     this.initShapes();
-    this.cellSize = 150;
+    this.cellSize = 100;
     this.rows = this.height / this.cellSize;
     this.cols = this.width / this.cellSize;
     this.debug = true;
@@ -86,11 +93,20 @@ class Effect {
     for (let i = 0; i < this.cols; i++) {
       this.angles[i] = [];
       for (let j = 0; j < this.rows; j++) {
-        this.angles[i][j] = Math.random() * 0.5 - 0.25;
+        this.angles[i][j] = Math.random() * 0.05 - 0.05;
       }
     }
 
     const debugBtn = document.getElementById("debugBtn");
+    const numSlider = document.getElementById("numSlider");
+    const numValue = document.getElementById("numValue");
+
+    const radSlider = document.getElementById("radSlider");
+    const radValue = document.getElementById("radValue");
+
+    const insetSlider = document.getElementById("insetSlider");
+    const insetValue = document.getElementById("insetValue");
+
     debugBtn.addEventListener("click", () => {
       this.debug = !this.debug;
     });
@@ -99,17 +115,36 @@ class Effect {
         this.debug = !this.debug;
       }
     });
-    console.log(this.angles);
+    numSlider.addEventListener("change", (e) => {
+      this.shapes = [];
+      this.initShapes();
+      this.resetValues();
+    });
+    radSlider.addEventListener("change", (e) => {
+      this.shapes = [];
+      this.initShapes();
+      this.resetValues();
+    });
+    insetSlider.addEventListener("change", (e) => {
+      this.shapes = [];
+      this.initShapes();
+      this.resetValues();
+    });
   }
   initShapes() {
     for (let i = 0; i < this.shapeNum; i++) {
-      let x = Math.random() * this.width;
-      let y = Math.random() * this.height;
-      let radius = 50;
-      let inset = 0.1;
-      let n = 4;
+      let radius = Number(radSlider.value);
+      let x = Math.random() * (this.width - radius - radius) + radius;
+      let y = Math.random() * (this.height - radius - radius) + radius;
+      let inset = Number(insetSlider.value);
+      let n = Number(numSlider.value);
       this.shapes.push(new Shape(this, x, y, radius, inset, n));
     }
+  }
+  resetValues() {
+    numValue.innerHTML = numSlider.value;
+    radValue.innerHTML = radSlider.value;
+    insetValue.innerHTML = insetSlider.value;
   }
   drawGrid(ctx) {
     if (!this.debug) {
