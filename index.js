@@ -11,7 +11,7 @@ grad.addColorStop(0.6, "green");
 grad.addColorStop(0.8, "violet");
 
 ctx.shadowColor = "white";
-ctx.shad0wBlur = 4
+ctx.shad0wBlur = 4;
 ctx.shadowOffsetX = 4;
 ctx.shadowOffsetY = 4;
 
@@ -85,7 +85,7 @@ class Effect {
     this.shapes = [];
     this.shape = new Shape(this);
     this.initShapes();
-    this.cellSize = 80;
+    this.cellSize = 100;
     this.rows = this.height / this.cellSize;
     this.cols = this.width / this.cellSize;
     this.debug = true;
@@ -135,7 +135,6 @@ class Effect {
       this.resetValues();
     });
     shapeNumSlider.addEventListener("change", (e) => {
-     
       this.shapes = [];
       this.initShapes();
       this.resetValues();
@@ -157,7 +156,6 @@ class Effect {
     radValue.innerHTML = radSlider.value;
     insetValue.innerHTML = insetSlider.value;
     shapeNumValue.innerHTML = shapeNumSlider.value;
-
   }
   drawGrid(ctx) {
     if (!this.debug) {
